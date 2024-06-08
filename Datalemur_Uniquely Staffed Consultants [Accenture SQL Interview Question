@@ -1,0 +1,49 @@
+
+CREATE TABLE employees (
+    employee_id INTEGER,
+    engagement_id INTEGER
+);
+
+
+CREATE TABLE consulting_engagements (
+    engagement_id INTEGER,
+    project_name VARCHAR(255),
+    client_name VARCHAR(255)
+);
+
+INSERT INTO employees (employee_id, engagement_id) VALUES
+(1001, 1),
+(1001, 2),
+(1002, 1),
+(1003, 3),
+(1004, 4);
+
+
+INSERT INTO consulting_engagements (engagement_id, project_name, client_name) VALUES
+(1, 'SAP Logistics Modernization', 'Department of Defense'),
+(2, 'Oracle Cloud Migration', 'Department of Education'),
+(3, 'Trust & Safety Operations', 'Google'),
+(4, 'SAP IoT Cloud Integration', 'Google');
+
+with cte as(
+select client_name,COUNT(employee_id) as tcwid
+from consulting_engagements c
+join employees e
+on c.engagement_id = e.engagement_id
+group by client_name
+),cte2 as(
+select client_name,employee_id,dense_rank() over(order by employee_id) as rw
+from consulting_engagements c
+join employees e
+on c.engagement_id = e.engagement_id
+),cte3 as(
+select c1.client_name,COUNT(c1.employee_id) as te2
+from cte2 c1
+join cte2 c2
+on c1.client_name<>c2.client_name and c1.employee_id = c2.employee_id
+group by c1.client_name
+)
+select cte.client_name,tcwid as total_staff,coalesce(tcwid-te2,tcwid) as exclusive_staff
+from cte 
+left join cte3 
+on cte.client_name = cte3.client_name
