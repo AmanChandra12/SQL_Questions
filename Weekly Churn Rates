@@ -1,0 +1,28 @@
+use ytvideos
+CREATE TABLE users (
+    user_id INTEGER,
+    signup_date DATETIME,
+    last_login DATETIME
+);
+INSERT INTO users (user_id, signup_date, last_login) VALUES
+(1001, '2022-06-01 12:00:00', '2022-07-05 12:00:00'),
+(1002, '2022-03-03 12:00:00', '2022-06-15 12:00:00'),
+(1004, '2022-06-02 12:00:00', '2022-06-15 12:00:00'),
+(1006, '2022-05-15 12:00:00', '2022-06-27 12:00:00'),
+(1012, '2022-06-15 12:00:00', '2022-07-22 12:00:00');
+
+
+with cte as(
+select *,DATEPART(week,signup_date) as signup_week,DATEDIFF(day,signup_date,last_login) as days_before_signup
+from users
+),cte2 as(
+select *,DENSE_RANK() over(order by signup_week) as rnk
+from cte
+),cte3 as(
+select *,COUNT(user_id) over(partition by rnk order by rnk) as cnt
+from cte2
+--where days_before_signup<=33
+)
+select *
+from cte3
+
