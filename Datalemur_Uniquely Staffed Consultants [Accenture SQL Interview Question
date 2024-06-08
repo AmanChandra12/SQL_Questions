@@ -26,24 +26,24 @@ INSERT INTO consulting_engagements (engagement_id, project_name, client_name) VA
 (4, 'SAP IoT Cloud Integration', 'Google');
 
 with cte as(
-select client_name,COUNT(employee_id) as tcwid
+select client_name,COUNT(employee_id) as total_staff
 from consulting_engagements c
 join employees e
 on c.engagement_id = e.engagement_id
 group by client_name
 ),cte2 as(
-select client_name,employee_id,dense_rank() over(order by employee_id) as rw
+select client_name,employee_id
 from consulting_engagements c
 join employees e
 on c.engagement_id = e.engagement_id
 ),cte3 as(
-select c1.client_name,COUNT(c1.employee_id) as te2
+select c1.client_name,COUNT(c1.employee_id) as exclusive_staff
 from cte2 c1
 join cte2 c2
 on c1.client_name<>c2.client_name and c1.employee_id = c2.employee_id
 group by c1.client_name
 )
-select cte.client_name,tcwid as total_staff,coalesce(tcwid-te2,tcwid) as exclusive_staff
+select cte.client_name,total_staff as total_staff,coalesce(total_staff-exclusive_staff,total_staff) as exclusive_staff
 from cte 
 left join cte3 
 on cte.client_name = cte3.client_name
