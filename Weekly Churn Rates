@@ -2,6 +2,7 @@ use ytvideos
 CREATE TABLE users (
     user_id INTEGER,
     signup_date DATETIME,
+
     last_login DATETIME
 );
 INSERT INTO users (user_id, signup_date, last_login) VALUES
