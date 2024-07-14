@@ -1,0 +1,24 @@
+use ytvideos
+
+-- Create the employees table
+CREATE TABLE employee (
+    emp_id INTEGER,
+    manager_id INTEGER,
+    manager_name varchar(20)
+);
+
+-- Insert the example input data into the employees table
+INSERT INTO employee (emp_id, manager_id, manager_name) VALUES
+(10, 103, 'Rom'),
+(1, 101, 'Duyen'),
+(101, 1001, 'Rick'),
+(103, 1001, 'Rick'),
+(1001, 1008, 'John');
+
+
+select e1.emp_id as staff ,e1.manager_name as manager,e2.manager_name  as senior_man,e3.manager_name as head
+from employee e1
+join employee e2
+on e1.manager_id = e2.emp_id
+join employee e3
+on e2.manager_id = e3.emp_id
